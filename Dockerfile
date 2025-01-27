@@ -1,20 +1,26 @@
-# Use the official Node.js 14 image as a parent image
+# Use the official Node.js 18 image as a base image
 FROM node:18
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy the current directory contents into the container at /app
-COPY . .
+# Copy package.json and package-lock.json first (for caching)
+COPY package*.json ./
 
-# Install any dependencies
+# Install dependencies
 RUN npm install
 
-# Assuming you're at the right directory context
-# Backup the dist directory if it exists, and clear it
+# Copy the rest of the application, including extra/ directory
+COPY . .
+
+# Backup and clear dist if it exists
 RUN if [ -d "./dist" ]; then cp -r ./dist ./dist-backup && rm -rf ./dist; fi
 
-#Install dist
+# Run the download-dist script
 RUN npm run download-dist
+
+# Expose port 3001
 EXPOSE 3001
+
+# Start the server
 CMD ["node", "server/server.js"]
