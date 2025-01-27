@@ -5,6 +5,7 @@ FROM node:18
 WORKDIR /app
 
 # Copy package.json and package-lock.json first (for caching)
+COPY ./extra /app/extra
 COPY package*.json ./
 
 # Install dependencies
